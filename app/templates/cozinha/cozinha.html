@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <h2 class="text-center mb-4">Área da Cozinha</h2>
+    
+    <div class="row">
+        <!-- Pedidos Pendentes -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-warning">
+                    <h4 class="mb-0">Pedidos Pendentes</h4>
+                </div>
+                <div class="card-body">
+                    {% for item, status in pedidos if status.status == 'Pendente' %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Mesa {{ item.comanda.mesa.numero }} - Comanda {{ item.comanda.id }}</h5>
+                            <p class="card-text">
+                                <strong>Item:</strong> {{ item.produto.nome }}<br>
+                                <strong>Quantidade:</strong> {{ item.quantidade }}<br>
+                                {% if item.observacao %}
+                                <strong>Observação do Cliente:</strong> {{ item.observacao }}<br>
+                                {% endif %}
+                            </p>
+                            <form action="{{ url_for('cozinha.atualizar_status', pedido_id=status.id) }}" method="POST" class="mb-2">
+                                <input type="hidden" name="status" value="Em Preparo">
+                                <button type="submit" class="btn btn-primary">Iniciar Preparo</button>
+                            </form>
+                            <div class="row">
+                                <div class="col">
+                                    <input type="number" class="form-control tempo-estimado" data-pedido-id="{{ status.id }}" placeholder="Tempo (min)" value="{{ status.tempo_estimado or '' }}">
+                                </div>
+                                <div class="col">
+                                    <input type="text" class="form-control observacao-cozinha" data-pedido-id="{{ status.id }}" placeholder="Observações da cozinha" value="{{ status.observacoes_cozinha or '' }}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pedidos em Preparo -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info">
+                    <h4 class="mb-0">Em Preparo</h4>
+                </div>
+                <div class="card-body">
+                    {% for item, status in pedidos if status.status == 'Em Preparo' %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Mesa {{ item.comanda.mesa.numero }} - Comanda {{ item.comanda.id }}</h5>
+                            <p class="card-text">
+                                <strong>Item:</strong> {{ item.produto.nome }}<br>
+                                <strong>Quantidade:</strong> {{ item.quantidade }}<br>
+                                <strong>Início do Preparo:</strong> {{ status.inicio_preparo.strftime('%H:%M:%S') }}<br>
+                                {% if status.tempo_estimado %}
+                                <strong>Tempo Estimado:</strong> {{ status.tempo_estimado }} minutos<br>
+                                {% endif %}
+                                {% if item.observacao %}
+                                <strong>Observação do Cliente:</strong> {{ item.observacao }}<br>
+                                {% endif %}
+                                {% if status.observacoes_cozinha %}
+                                <strong>Observações da Cozinha:</strong> {{ status.observacoes_cozinha }}<br>
+                                {% endif %}
+                            </p>
+                            <form action="{{ url_for('cozinha.atualizar_status', pedido_id=status.id) }}" method="POST">
+                                <input type="hidden" name="status" value="Pronto">
+                                <button type="submit" class="btn btn-success">Marcar como Pronto</button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Atualizar tempo estimado
+    document.querySelectorAll('.tempo-estimado').forEach(input => {
+        input.addEventListener('change', function() {
+            const pedidoId = this.dataset.pedidoId;
+            const tempo = this.value;
+            
+            fetch(`/cozinha/atualizar_tempo/${pedidoId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `tempo=${tempo}`
+            });
+        });
+    });
+    
+    // Atualizar observações
+    document.querySelectorAll('.observacao-cozinha').forEach(input => {
+        input.addEventListener('change', function() {
+            const pedidoId = this.dataset.pedidoId;
+            const observacao = this.value;
+            
+            fetch(`/cozinha/adicionar_observacao/${pedidoId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `observacao=${encodeURIComponent(observacao)}`
+            });
+        });
+    });
+});
+</script>
+{% endblock %} 

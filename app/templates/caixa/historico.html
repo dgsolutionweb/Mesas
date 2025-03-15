@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>Histórico do Caixa</h2>
+    </div>
+    <div class="col text-end">
+        <a href="{{ url_for('caixa.ver_caixa') }}" class="btn btn-primary">
+            <i class="fas fa-cash-register"></i> Caixa Atual
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Status</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for caixa in caixas %}
+                            <tr>
+                                <td>{{ caixa.data.strftime('%d/%m/%Y') }}</td>
+                                <td>
+                                    <span class="badge {% if caixa.status == 'Aberto' %}bg-success{% else %}bg-danger{% endif %}">
+                                        {{ caixa.status }}
+                                    </span>
+                                </td>
+                                <td>R$ {{ "%.2f"|format(caixa.valor_total) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

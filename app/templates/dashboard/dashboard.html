@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <h2 class="text-center mb-4">Dashboard Gerencial</h2>
+    
+    <div class="row">
+        <!-- Vendas Diárias -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div id="vendas-chart"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Produtos Mais Vendidos -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div id="produtos-chart"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Desempenho dos Garçons -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div id="garcons-chart"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Horários de Pico -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div id="horarios-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Plotly.js -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+    // Renderizar gráficos
+    Plotly.newPlot('vendas-chart', {{ graphs.vendas | safe }}.data, {{ graphs.vendas | safe }}.layout);
+    Plotly.newPlot('produtos-chart', {{ graphs.produtos | safe }}.data, {{ graphs.produtos | safe }}.layout);
+    Plotly.newPlot('garcons-chart', {{ graphs.garcons | safe }}.data, {{ graphs.garcons | safe }}.layout);
+    Plotly.newPlot('horarios-chart', {{ graphs.horarios | safe }}.data, {{ graphs.horarios | safe }}.layout);
+</script>
+{% endblock %} 

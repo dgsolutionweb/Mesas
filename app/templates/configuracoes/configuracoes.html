@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center">Configurações do Sistema</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('configuracoes.salvar_configuracoes') }}" enctype="multipart/form-data">
+                        <h4 class="mb-3">Informações do Restaurante</h4>
+                        <div class="mb-3">
+                            <label for="nome_restaurante" class="form-label">Nome do Restaurante</label>
+                            <input type="text" class="form-control" id="nome_restaurante" name="nome_restaurante" value="{{ config.nome_restaurante }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="logo" class="form-label">Logo do Restaurante</label>
+                            {% if config.logo_path %}
+                            <div class="mb-2">
+                                <img src="{{ config.logo_path }}" alt="Logo atual" style="max-width: 200px;">
+                            </div>
+                            {% endif %}
+                            <input type="file" class="form-control" id="logo" name="logo" accept="image/*">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="endereco" class="form-label">Endereço</label>
+                            <input type="text" class="form-control" id="endereco" name="endereco" value="{{ config.endereco }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="telefone" class="form-label">Telefone</label>
+                            <input type="text" class="form-control" id="telefone" name="telefone" value="{{ config.telefone }}">
+                        </div>
+
+                        <h4 class="mb-3 mt-4">Configurações de Impressão</h4>
+                        
+                        <div class="mb-3">
+                            <label for="impressora_cozinha" class="form-label">Impressora da Cozinha</label>
+                            <input type="text" class="form-control" id="impressora_cozinha" name="impressora_cozinha" value="{{ config.impressora_cozinha }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="impressora_bar" class="form-label">Impressora do Bar</label>
+                            <input type="text" class="form-control" id="impressora_bar" name="impressora_bar" value="{{ config.impressora_bar }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="imprimir_pedidos_cozinha" name="imprimir_pedidos_cozinha" {% if config.imprimir_pedidos_cozinha %}checked{% endif %}>
+                                <label class="form-check-label" for="imprimir_pedidos_cozinha">
+                                    Imprimir pedidos para cozinha automaticamente
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="imprimir_pedidos_bar" name="imprimir_pedidos_bar" {% if config.imprimir_pedidos_bar %}checked{% endif %}>
+                                <label class="form-check-label" for="imprimir_pedidos_bar">
+                                    Imprimir pedidos para bar automaticamente
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="categorias_cozinha" class="form-label">Categorias para Cozinha (separadas por vírgula)</label>
+                            <input type="text" class="form-control" id="categorias_cozinha" name="categorias_cozinha" value="{{ config.categorias_cozinha }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="categorias_bar" class="form-label">Categorias para Bar (separadas por vírgula)</label>
+                            <input type="text" class="form-control" id="categorias_bar" name="categorias_bar" value="{{ config.categorias_bar }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="mensagem_rodape" class="form-label">Mensagem de Rodapé para Impressão</label>
+                            <textarea class="form-control" id="mensagem_rodape" name="mensagem_rodape" rows="2">{{ config.mensagem_rodape }}</textarea>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Salvar Configurações</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

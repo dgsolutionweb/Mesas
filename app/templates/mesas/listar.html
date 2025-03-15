@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Cabeçalho com estatísticas -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="mb-0"><i class="fas fa-table text-primary"></i> Mesas do Restaurante</h2>
+                <a href="{{ url_for('mesas.adicionar_mesa') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Nova Mesa
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cards com estatísticas -->
+    <div class="row mb-4">
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50">Mesas Livres</h6>
+                            <h3 class="mb-0">{{ mesas|selectattr("status", "equalto", "Livre")|list|length }}</h3>
+                        </div>
+                        <i class="fas fa-check-circle fa-2x text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card bg-danger text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50">Mesas Ocupadas</h6>
+                            <h3 class="mb-0">{{ mesas|selectattr("status", "equalto", "Ocupada")|list|length }}</h3>
+                        </div>
+                        <i class="fas fa-users fa-2x text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card bg-warning text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50">Mesas Reservadas</h6>
+                            <h3 class="mb-0">{{ mesas|selectattr("status", "equalto", "Reservada")|list|length }}</h3>
+                        </div>
+                        <i class="fas fa-calendar-check fa-2x text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card bg-info text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50">Total de Mesas</h6>
+                            <h3 class="mb-0">{{ mesas|length }}</h3>
+                        </div>
+                        <i class="fas fa-th fa-2x text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grid de Mesas -->
+    <div class="row g-4">
+        {% for mesa in mesas %}
+        <div class="col-xl-3 col-lg-4 col-md-6">
+            <div class="card h-100 mesa-card position-relative {% if mesa.status == 'Livre' %}border-success{% elif mesa.status == 'Ocupada' %}border-danger{% else %}border-warning{% endif %}" 
+                 style="transition: all 0.3s ease;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 class="card-title mb-0">Mesa {{ mesa.numero }}</h3>
+                        <span class="badge {% if mesa.status == 'Livre' %}bg-success{% elif mesa.status == 'Ocupada' %}bg-danger{% else %}bg-warning{% endif %} rounded-pill">
+                            {{ mesa.status }}
+                        </span>
+                    </div>
+
+                    {% if mesa.status == 'Ocupada' and mesa.comandas %}
+                    <div class="mb-3">
+                        <small class="text-muted">Comanda Atual:</small>
+                        <p class="mb-0">#{{ mesa.comandas[-1].id }} - R$ {{ "%.2f"|format(mesa.comandas[-1].valor_total) }}</p>
+                    </div>
+                    {% endif %}
+
+                    <div class="d-grid gap-2">
+                        {% if mesa.status == 'Livre' %}
+                        <a href="{{ url_for('mesas.abrir_comanda', mesa_id=mesa.id) }}" 
+                           class="btn btn-success btn-lg w-100 mb-2 position-relative overflow-hidden">
+                            <span class="position-relative z-1">
+                                <i class="fas fa-file-alt me-2"></i>Abrir Comanda
+                            </span>
+                        </a>
+                        {% endif %}
+                        
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-cog me-2"></i>Ações
+                            </button>
+                            <ul class="dropdown-menu w-100">
+                                <li>
+                                    <form action="{{ url_for('mesas.alterar_status_mesa', mesa_id=mesa.id) }}" method="POST">
+                                        <input type="hidden" name="status" value="Livre">
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="fas fa-check-circle text-success me-2"></i>Marcar como Livre
+                                        </button>
+                                    </form>
+                                </li>
+                                <li>
+                                    <form action="{{ url_for('mesas.alterar_status_mesa', mesa_id=mesa.id) }}" method="POST">
+                                        <input type="hidden" name="status" value="Reservada">
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="fas fa-calendar-check text-warning me-2"></i>Marcar como Reservada
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Estilos customizados -->
+<style>
+.mesa-card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.mesa-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.btn-success {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-success::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+    transition: 0.5s;
+}
+
+.btn-success:hover::before {
+    left: 100%;
+}
+
+.dropdown-item {
+    padding: 0.5rem 1rem;
+    transition: all 0.2s;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+    padding-left: 1.5rem;
+}
+
+.badge {
+    font-size: 0.9rem;
+    padding: 0.5em 1em;
+}
+
+.z-1 {
+    z-index: 1;
+}
+
+@media (max-width: 768px) {
+    .col-md-3 {
+        margin-bottom: 1rem;
+    }
+}
+</style>
+{% endblock %} 

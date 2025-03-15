@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center">Editar Produto</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="nome" class="form-label">Nome do Produto</label>
+                        <input type="text" class="form-control" id="nome" name="nome" value="{{ produto.nome }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="descricao" class="form-label">Descrição</label>
+                        <textarea class="form-control" id="descricao" name="descricao" rows="3">{{ produto.descricao }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="preco" class="form-label">Preço</label>
+                        <div class="input-group">
+                            <span class="input-group-text">R$</span>
+                            <input type="number" class="form-control" id="preco" name="preco" step="0.01" min="0" value="{{ produto.preco }}" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="categoria" class="form-label">Categoria</label>
+                        <select class="form-select" id="categoria" name="categoria" required>
+                            <option value="Bebidas" {% if produto.categoria == 'Bebidas' %}selected{% endif %}>Bebidas</option>
+                            <option value="Pratos Principais" {% if produto.categoria == 'Pratos Principais' %}selected{% endif %}>Pratos Principais</option>
+                            <option value="Sobremesas" {% if produto.categoria == 'Sobremesas' %}selected{% endif %}>Sobremesas</option>
+                            <option value="Entradas" {% if produto.categoria == 'Entradas' %}selected{% endif %}>Entradas</option>
+                            <option value="Porções" {% if produto.categoria == 'Porções' %}selected{% endif %}>Porções</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="disponivel" name="disponivel" {% if produto.disponivel %}checked{% endif %}>
+                            <label class="form-check-label" for="disponivel">
+                                Produto disponível
+                            </label>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                        <a href="{{ url_for('produtos.listar_produtos') }}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>Comandas Abertas</h2>
+    </div>
+</div>
+
+<div class="row">
+    {% for comanda in comandas %}
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Comanda #{{ comanda.id }} - Mesa {{ comanda.mesa.numero }}</h5>
+                <p class="card-text">
+                    <strong>Aberta em:</strong> {{ comanda.data_abertura.strftime('%d/%m/%Y %H:%M') }}<br>
+                    <strong>Total:</strong> R$ {{ "%.2f"|format(comanda.valor_total) }}
+                </p>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('comandas.ver_comanda', comanda_id=comanda.id) }}" class="btn btn-primary">
+                        <i class="fas fa-eye"></i> Ver Detalhes
+                    </a>
+                    <form action="{{ url_for('comandas.fechar_comanda', comanda_id=comanda.id) }}" method="POST">
+                        <button type="submit" class="btn btn-danger w-100">
+                            <i class="fas fa-check"></i> Fechar Comanda
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if not comandas %}
+<div class="text-center">
+    <p>Não há comandas abertas no momento.</p>
+</div>
+{% endif %}
+{% endblock %} 

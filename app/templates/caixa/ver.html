@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>Caixa do Dia</h2>
+    </div>
+    <div class="col text-end">
+        {% if caixa.status == 'Aberto' %}
+        <form action="{{ url_for('caixa.fechar_caixa') }}" method="POST" class="d-inline">
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-lock"></i> Fechar Caixa
+            </button>
+        </form>
+        {% endif %}
+        <a href="{{ url_for('caixa.historico_caixa') }}" class="btn btn-secondary">
+            <i class="fas fa-history"></i> Histórico
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Resumo do Caixa</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h6 class="card-title">Status</h6>
+                                <p class="card-text">
+                                    <span class="badge {% if caixa.status == 'Aberto' %}bg-success{% else %}bg-danger{% endif %}">
+                                        {{ caixa.status }}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h6 class="card-title">Data</h6>
+                                <p class="card-text">{{ caixa.data.strftime('%d/%m/%Y') }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h6 class="card-title">Total</h6>
+                                <p class="card-text">R$ {{ "%.2f"|format(caixa.valor_total) }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Comandas Fechadas</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Comanda #</th>
+                                <th>Mesa</th>
+                                <th>Horário Abertura</th>
+                                <th>Horário Fechamento</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for comanda in comandas %}
+                            <tr>
+                                <td>{{ comanda.id }}</td>
+                                <td>{{ comanda.mesa.numero }}</td>
+                                <td>{{ comanda.data_abertura.strftime('%H:%M') }}</td>
+                                <td>{{ comanda.data_fechamento.strftime('%H:%M') }}</td>
+                                <td>R$ {{ "%.2f"|format(comanda.valor_total) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

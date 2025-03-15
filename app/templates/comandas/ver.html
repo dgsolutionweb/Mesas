@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>Comanda #{{ comanda.id }} - Mesa {{ comanda.mesa.numero }}</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Itens da Comanda</h5>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Quantidade</th>
+                            <th>Preço Unit.</th>
+                            <th>Total</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in comanda.itens %}
+                        <tr>
+                            <td>{{ item.produto.nome }}</td>
+                            <td>{{ item.quantidade }}</td>
+                            <td>R$ {{ "%.2f"|format(item.preco_unitario) }}</td>
+                            <td>R$ {{ "%.2f"|format(item.preco_unitario * item.quantidade) }}</td>
+                            <td>
+                                <form action="{{ url_for('comandas.remover_item', comanda_id=comanda.id, item_id=item.id) }}" method="POST" class="d-inline">
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% if item.observacao %}
+                        <tr>
+                            <td colspan="5" class="text-muted">
+                                <small><i class="fas fa-info-circle"></i> {{ item.observacao }}</small>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                            <td colspan="2"><strong>R$ {{ "%.2f"|format(comanda.valor_total) }}</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Adicionar Item</h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('comandas.adicionar_item', comanda_id=comanda.id) }}" method="POST">
+                    <div class="mb-3">
+                        <label for="produto_id" class="form-label">Produto</label>
+                        <select class="form-select" id="produto_id" name="produto_id" required>
+                            {% for produto in produtos %}
+                            <option value="{{ produto.id }}" data-preco="{{ produto.preco }}">
+                                {{ produto.nome }} - R$ {{ "%.2f"|format(produto.preco) }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="quantidade" class="form-label">Quantidade</label>
+                        <input type="number" class="form-control" id="quantidade" name="quantidade" value="1" min="1" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="observacao" class="form-label">Observação</label>
+                        <textarea class="form-control" id="observacao" name="observacao" rows="2"></textarea>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Adicionar Item
+                        </button>
+                        <form action="{{ url_for('comandas.fechar_comanda', comanda_id=comanda.id) }}" method="POST">
+                            <button type="submit" class="btn btn-danger w-100">
+                                <i class="fas fa-check"></i> Fechar Comanda
+                            </button>
+                        </form>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
