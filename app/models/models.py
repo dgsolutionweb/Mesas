@@ -6,10 +6,10 @@ from app import db
 
 class Usuario(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    nome = db.Column(db.String(80), nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    senha_hash = db.Column(db.String(128))
-    cargo = db.Column(db.String(20), nullable=False)  # Gerente, Garçom, etc.
+    nome = db.Column(db.String(128), nullable=False)
+    email = db.Column(db.String(128), unique=True, nullable=False)
+    senha_hash = db.Column(db.String(512), nullable=False)
+    cargo = db.Column(db.String(128), nullable=False)  # Gerente, Garçom, etc.
 
     def set_senha(self, senha):
         self.senha_hash = generate_password_hash(senha)
